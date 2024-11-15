@@ -35,7 +35,19 @@ IGNORED_PREFIXES = [
 ]
 
 def get_pending_issues():
-    jql = 'project="sd911" AND status="Ожидает обработки" AND "Группа исполнителей" in (TS_MSK_city_team) AND (NOT "Customer Request Type" IN ("Возврат оборудования в ИТ", "(Офис)Организация нового рабочего места") AND priority != Blocker)'
+    jql = '''
+    project="sd911" 
+    AND status="Ожидает обработки" 
+    AND "Группа исполнителей" in (TS_MSK_city_team) 
+    AND (
+        NOT (
+            "Customer Request Type" = "Возврат оборудования в ИТ" 
+            AND reporter in (srvusr1cv8, srv_1C_ZUP_Jira)
+        )
+        AND "Customer Request Type" != "(Офис)Организация нового рабочего места"
+    ) 
+    AND priority != Blocker
+    '''
     url = f"{JIRA_BASE_URL}/rest/api/2/search?jql={jql}"
     response = requests.get(url, headers=HEADERS)
     response.raise_for_status()
