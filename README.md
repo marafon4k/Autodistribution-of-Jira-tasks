@@ -7,7 +7,7 @@ AutoJira — это скрипт для автоматического расп�
 1. Клонируйте репозиторий:
 
    ```bash
-   git clone https://github.com/your-username/AutoJira.git
+   git clone https://github.com/marafon4k/AutoJira.git
    cd AutoJira
    ```
 
