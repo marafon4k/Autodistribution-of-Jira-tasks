@@ -1,0 +1,70 @@
+# Ignore Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore environment and dependency files
+env/
+venv/
+ENV/
+.venv/
+*.env
+!.env.example  # Исключение для примера файла .env
+
+# Ignore OS and editor-specific files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Ignore log files
+*.log
+logs/
+auto_assign.log
+auto_assign_success.log
+
+# Ignore configuration files with sensitive data
+config.py
+config.yaml
+secrets.json
+!.config.py.example  # Исключение для примера файла config.py
+
+# Ignore JIRA credentials and token files
+jira_auth.json
+*.token
+.token
+
+# Ignore compiled code and other binary files
+*.so
+*.dll
+*.dylib
+
+# Ignore database and temporary files
+*.sqlite3
+*.db
+*.tmp
+*.bak
+
+# Ignore package files
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Ignore coverage and testing files
+.coverage
+.tox/
+pytest_cache/
+.coverage.*
+htmlcov/
+
+# Ignore specific dependency files
+pip-log.txt
+pip-wheel-metadata/
+
+# Ignore logging configuration
+logging.conf
+
+# macOS system files
+.DS_Store
