@@ -88,7 +88,7 @@ def distribute_issues():
             # Проверка на игнорирование задач с NB-Z*
             if "nb-z" in description:
                 # Если есть NB-Z*, но ни NB-Z04*, ни NB-Z4*, игнорируем задачу
-                if not any(nb_prefix in description for nb_prefix in ["nb-z04", "nb-z4-"]):
+                if not any(nb_prefix in description for nb_prefix in ["nb-z04", "nb-z4-", "nb-24-"]):
                     logger.info(f"Задача {issue_key} пропущена из-за игнорирования NB-Z* (не NB-Z04* или NB-Z4*).")
                     continue
 
