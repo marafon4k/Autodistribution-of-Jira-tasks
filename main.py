@@ -80,11 +80,12 @@ def distribute_issues():
     try:
         issues = get_pending_issues()
         for issue in issues:
-            summary = issue["fields"]["summary"].lower()
-            description = (issue["fields"].get("description") or "").lower()  # Проверка на None
-            issue_key = issue["key"]
-            assignee = issue["fields"].get("assignee")
+            summary = issue["fields"]["summary"].lower()  # Заголовок задачи
+            description = (issue["fields"].get("description") or "").lower()  # Описание задачи
+            issue_key = issue["key"]  # Идентификатор задачи
+            assignee = issue["fields"].get("assignee")  # Текущий исполнитель (если есть)
 
+            # Если исполнитель уже назначен
             if assignee:
                 assignee_name = assignee["name"]
                 transition_issue_to_in_progress(issue_key)
@@ -93,31 +94,41 @@ def distribute_issues():
                 success_logger.info(f"Задача {issue_key} назначена повторно на {assignee_name}")
                 continue
 
+            # Пропускаем задачи с игнорируемыми префиксами
             if any(summary.startswith(prefix.lower()) for prefix in IGNORED_PREFIXES):
-                logger.info(f"Задача {issue_key} пропущена из-за совпадения с игнорируемыми фразами")
+                logger.info(f"Задача {issue_key} пропущена из-за совпадения с игнорируемыми префиксами")
                 continue
 
-            selected_group = None
+            # Логика определения группы
+            best_group = None
+            best_score = 0  # Используем для выбора группы с наибольшим количеством совпадений
             for group, keywords in KEYWORDS.items():
-                include_match = any(kw in summary or kw in description for kw in keywords["include"])
-                exclude_match = any(ex_kw in summary or ex_kw in description for ex_kw in keywords["exclude"])
+                # Подсчет совпадений
+                include_matches = sum(kw in summary or kw in description for kw in keywords["include"])
+                exclude_matches = sum(ex_kw in summary or ex_kw in description for ex_kw in keywords["exclude"])
 
-                if include_match and not exclude_match:
-                    if selected_group:
-                        logger.warning(f"Задача {issue_key} подходит к нескольким группам")
-                        selected_group = None
-                        break
-                    selected_group = group
+                # Если есть включения и нет совпадений с исключениями
+                if include_matches > 0 and exclude_matches == 0:
+                    logger.debug(f"Задача {issue_key} совпала с ключевыми словами группы {group} (include: {include_matches}).")
+                    # Выбираем группу с наибольшим количеством совпадений
+                    if include_matches > best_score:
+                        best_score = include_matches
+                        best_group = group
 
-            if selected_group:
-                assignee = min(GROUPS[selected_group], key=get_issue_count_for_user)
+            # Если группа определена, назначаем задачу
+            if best_group:
+                assignee = min(GROUPS[best_group], key=get_issue_count_for_user)
                 transition_issue_to_in_progress(issue_key)
                 assign_issue(issue_key, assignee)
+                logger.info(f"Задача {issue_key} переведена в 'В работе' и назначена на {assignee}. Группа: {best_group}")
                 success_logger.info(f"Задача {issue_key} переведена в 'В работе' и назначена на {assignee} (ссылка: {JIRA_BASE_URL}/browse/{issue_key})")
-                time.sleep(1)
+                time.sleep(1)  # Задержка для избежания лимитов API
             else:
-                logger.warning(f"Не удалось определить группу для задачи {issue_key}")
+                # Логируем задачи, которые не удалось распределить
+                logger.warning(f"Не удалось определить группу для задачи {issue_key}. Заголовок: {summary}, Описание: {description}")
+
     except Exception as e:
         logger.error(f"Ошибка при распределении задач: {e}")
+
 
 distribute_issues()
