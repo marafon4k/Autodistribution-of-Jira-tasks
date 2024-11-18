@@ -85,6 +85,12 @@ def distribute_issues():
             issue_key = issue["key"]  # Идентификатор задачи
             assignee = issue["fields"].get("assignee")  # Текущий исполнитель (если есть)
 
+            # Проверка на игнорирование задач с NB-Z* (но не NB-Z04*)
+            if "nb-z" in description:
+                if "nb-z04" not in description:
+                    logger.info(f"Задача {issue_key} пропущена из-за игнорирования NB-Z* (не NB-Z04*).")
+                    continue
+
             # Если исполнитель уже назначен
             if assignee:
                 assignee_name = assignee["name"]
@@ -129,6 +135,5 @@ def distribute_issues():
 
     except Exception as e:
         logger.error(f"Ошибка при распределении задач: {e}")
-
 
 distribute_issues()
