@@ -36,7 +36,7 @@ pip install -r requirements.txt
 #### Запустите скрипт:
 
 ```bash
-python auto_assign.py
+python main.py
 ```
 #### Логирование
 
