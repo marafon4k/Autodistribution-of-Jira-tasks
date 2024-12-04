@@ -16,8 +16,25 @@ JIRA_BASE_URL = os.getenv("JIRA_BASE_URL")
 USERNAME = os.getenv("USERNAME")
 API_TOKEN = os.getenv("API_TOKEN")
 
-# Настройка логирования
-logging.config.fileConfig("logging.conf")
+# Создаем структуру логов
+log_dir = "logs_autojira"
+date_dir = datetime.now().strftime("%Y-%m-%d")
+log_path = os.path.join(log_dir, date_dir)
+os.makedirs(log_path, exist_ok=True)  # Создаем папку, если она не существует
+
+# Обновляем пути к файлам логов с датой и временем
+auto_assign_log = os.path.join(log_path, f"auto_assign_{datetime.now().strftime('%H-%M-%S')}.log")
+auto_assign_success_log = os.path.join(log_path, f"auto_assign_success_{datetime.now().strftime('%H-%M-%S')}.log")
+
+# Настройка логирования с использованием обновленных путей
+logging.config.fileConfig(
+    "logging.conf",
+    defaults={
+        "log_file": auto_assign_log,
+        "success_log_file": auto_assign_success_log
+    }
+)
+
 logger = logging.getLogger()
 success_logger = logging.getLogger("successLogger")
 
