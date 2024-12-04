@@ -5,6 +5,7 @@ import logging.config
 from jira import JIRA
 from config import GROUPS, KEYWORDS
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 
 # Загружаем переменные из .env файла
